@@ -1,21 +1,15 @@
-name: action-name
+name: delete-submodules
 author: gendloop
 description: 'action description'
 inputs:
-# Required
-  version:
-    description: 'New version. e.g. v0.0.0'
+  submodule_path:
+    description: 'Submodule path to delete'
     required: true
-    default: 'v0.0.0'
-  token:
-    description: 'Personal token'
+    default: ''
+  all:
+    description: 'Delete all repos'
     required: true
-    default: ${{ github.token }}
-# Optional
-  branch:
-    description: 'branch'
-    required: false
-    default: main
+    default: false
 
 runs:
   using: 'composite'
@@ -23,46 +17,45 @@ runs:
     - name: checkout-repo
       uses: actions/checkout@v3
       with: 
-        token: ${{ inputs.token }}
-        fetch-depth: 0
+        submodules: 'recursive'
 
-    - name: setup-node
-      uses: actions/setup-node@v3
-      with:
-        node-version: 16.x
-      
-    - name: add-release-log
-      shell: bash
-      run: npx changelogithub
-      env:
-        GITHUB_TOKEN: ${{ inputs.token }}
-
-    - name: cmd
+    - name: delete-all-submodules
       shell: bash
       working-directory: ${{ github.workspace }}
-      env:
-          GITHUB_TOKEN: ${{ inputs.token }}
+      if: ${{ inputs.all }}
       run: |
-        git config --global user.name "$GITHUB_ACTOR"
-        git config --global user.email "${GITHUB_ACTOR}@users.noreply.github.com"
-        git checkout ${{ inputs.branch }}
-        git pull
-        repo_name=${GITHUB_REPOSITORY#*/}
-        version=${{ inputs.version }}
-        echo $repo_name
-        echo $version
-        if [[ ${version} =~ ^v(.*)\.(.*)\.(.*) ]] 
-        then
-          major=${BASH_REMATCH[1]}
-          minor=${BASH_REMATCH[2]}
-          patch=${BASH_REMATCH[3]}
-        fi
-        echo $major $minor $patch
-        echo "" > config.txt
-        echo "PROJECT_NAME=${repo_name}" >> config.txt
-        echo "${repo_name}_VERSION_MAJOR=${major}" >> config.txt
-        echo "${repo_name}_VERSION_MINOR=${minor}" >> config.txt
-        echo "${repo_name}_VERSION_PATCH=${patch}" >> config.txt
-        git add .
-        (git commit -m "chore: release VERSION ${{ inputs.version }} ") || true
-        (git push) || true
+        git submodule init
+        git submodule update
+        folders=($(git submodule foreach --quiet 'echo $path'))
+        git submodule deinit --all
+        rm -rf .git/modules/
+        rm .gitmodules
+        for folder in "${folders[@]}"; do
+          rm -rf $folder
+        done
+
+    - name: delete-specific-submodule
+      shell: bash
+      working-directory: ${{ github.workspace }}
+      if: ! ${{ inputs.all }}
+      run: |
+        git submodule init
+        git submodule update
+        git submodule deinit ${{ inputs.submodule_path }}
+        git config --file=.gitmodules --remove-section submodule.${{ inputs.submodule_path }}
+        rm -rf .git/modules/${{ inputs.submodule_path }}
+        rm -rf ${{ inputs.submodule_path }}
+
+    - name: git-push-all-submodules
+      uses: gendloop/git-push@v1.0.0
+      if: ${{ inputs.all }}
+      with:
+        token: ${{ github.token }}
+        commit: "chore: delete all submodules"
+
+    - name: git-push-specific-submodule
+      uses: gendloop/git-push@v1.0.0
+      if: ! ${{ inputs.all }}
+      with:
+        token: ${{ github.token }}
+        commit: "chore: delete submodule ${{ inputs.submodule_path }}"

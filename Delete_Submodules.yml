@@ -1,0 +1,31 @@
+name: Delete_Submodules
+
+permissions:
+  contents: write
+  actions: write
+
+on: 
+  workflow_dispatch:
+    inputs:
+      submodule_path:
+        description: 'Submodule path to delete'
+        type: string
+        required: true
+        default: ''
+      all:
+        description: 'Delete all repos'
+        type: bool
+        required: true
+        default: false
+
+jobs:
+  template_name:
+    runs-on: ubuntu-latest
+    steps:
+      - name: delete-submodules
+        uses: gendloop/delete-submodules@main
+        with: 
+          submodule_path: ${{ inputs.submodule_path }}
+          all: ${{ inputs.all }}
+
+      
