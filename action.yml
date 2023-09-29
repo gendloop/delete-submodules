@@ -9,7 +9,7 @@ inputs:
   all:
     description: 'Delete all repos'
     required: true
-    default: false
+    default: true
   token:
     description: 'Personal token'
     required: true
@@ -42,7 +42,7 @@ runs:
     - name: delete-specific-submodule
       shell: bash
       working-directory: ${{ github.workspace }}
-      if: false == ${{ inputs.all }}
+      if: ${{ !${{ inputs.all }} }} 
       run: |
         git submodule init
         git submodule update
@@ -60,7 +60,7 @@ runs:
 
     - name: git-push-specific-submodule
       uses: gendloop/git-push@v1.0.0
-      if: false == ${{ inputs.all }}
+      if: ${{ !${{ inputs.all }} }} 
       with:
         token: ${{ github.token }}
         commit: "chore: delete submodule ${{ inputs.submodule_path }}"
