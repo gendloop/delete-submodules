@@ -14,7 +14,7 @@ on:
         default: ''
       all:
         description: 'Delete all repos'
-        type: bool
+        type: boolean
         required: true
         default: true
 
