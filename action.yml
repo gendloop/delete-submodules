@@ -27,7 +27,7 @@ runs:
     - name: delete-all-submodules
       shell: bash
       working-directory: ${{ github.workspace }}
-      if: 'true' == ${{ inputs.all }}
+      if: ${{ inputs.all == 'true' }}
       run: |
         git submodule init
         git submodule update
@@ -42,7 +42,7 @@ runs:
     - name: delete-specific-submodule
       shell: bash
       working-directory: ${{ github.workspace }}
-      if: 'false' == ${{ inputs.all }}
+      if: ${{ inputs.all == 'false' }}
       run: |
         git submodule init
         git submodule update
@@ -53,14 +53,14 @@ runs:
 
     - name: git-push-all-submodules
       uses: gendloop/git-push@v1.0.0
-      if: 'true' == ${{ inputs.all }}
+      if: ${{ inputs.all == 'true' }}
       with:
         token: ${{ github.token }}
         commit: "chore: delete all submodules"
 
     - name: git-push-specific-submodule
       uses: gendloop/git-push@v1.0.0
-      if: 'false' == ${{ inputs.all }}
+      if: ${{ inputs.all == 'false' }}
       with:
         token: ${{ github.token }}
         commit: "chore: delete submodule ${{ inputs.submodule_path }}"
