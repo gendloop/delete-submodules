@@ -19,7 +19,7 @@ on:
         default: false
 
 jobs:
-  template_name:
+  delete_submodules:
     runs-on: ubuntu-latest
     steps:
       - name: delete-submodules
