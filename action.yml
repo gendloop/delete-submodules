@@ -10,6 +10,10 @@ inputs:
     description: 'Delete all repos'
     required: true
     default: false
+  token:
+    description: 'Personal token'
+    required: true
+    default: {{ github.token }}
 
 runs:
   using: 'composite'
@@ -18,6 +22,7 @@ runs:
       uses: actions/checkout@v3
       with: 
         submodules: 'recursive'
+        token: ${{ inputs.token }}
 
     - name: delete-all-submodules
       shell: bash

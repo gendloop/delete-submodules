@@ -27,5 +27,6 @@ jobs:
         with: 
           submodule_path: ${{ inputs.submodule_path }}
           all: ${{ inputs.all }}
+          token: ${{ secrets.GENDLOOP_ACCESS_TOKEN }}
 
       
