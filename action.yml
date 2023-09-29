@@ -4,7 +4,7 @@ description: 'action description'
 inputs:
   submodule_path:
     description: 'Submodule path to delete'
-    required: true
+    required: false
     default: ''
   all:
     description: 'Delete all repos'
@@ -37,7 +37,7 @@ runs:
     - name: delete-specific-submodule
       shell: bash
       working-directory: ${{ github.workspace }}
-      if: ! ${{ inputs.all }}
+      if: false == ${{ inputs.all }}
       run: |
         git submodule init
         git submodule update
@@ -55,7 +55,7 @@ runs:
 
     - name: git-push-specific-submodule
       uses: gendloop/git-push@v1.0.0
-      if: ! ${{ inputs.all }}
+      if: false == ${{ inputs.all }}
       with:
         token: ${{ github.token }}
         commit: "chore: delete submodule ${{ inputs.submodule_path }}"
