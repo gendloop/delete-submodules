@@ -13,7 +13,7 @@ inputs:
   token:
     description: 'Personal token'
     required: true
-    default: {{ github.token }}
+    default: ${{ github.token }}
 
 runs:
   using: 'composite'
