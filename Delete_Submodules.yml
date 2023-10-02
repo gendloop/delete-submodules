@@ -23,7 +23,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: delete-submodules
-        uses: gendloop/delete-submodules@main
+        uses: gendloop/delete-submodules@v1.0.0
         with: 
           submodule_path: ${{ inputs.submodule_path }}
           all: ${{ inputs.all }}
