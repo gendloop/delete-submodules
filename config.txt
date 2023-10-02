@@ -1,0 +1,5 @@
+
+PROJECT_NAME=delete-submodules
+delete-submodules_VERSION_MAJOR=1
+delete-submodules_VERSION_MINOR=0
+delete-submodules_VERSION_PATCH=0
